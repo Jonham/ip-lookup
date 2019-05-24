@@ -1,4 +1,4 @@
 #!/bin/sh
 
 # with other name
-go build -o build/ip-lookup-service__gin
+go build -ldflags -o build/ip-lookup-service__gin

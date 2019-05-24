@@ -1,2 +1,3 @@
-#!/bin/sh
+#!/bin/zsh
+
 ./build/ip-lookup-service__gin &!
