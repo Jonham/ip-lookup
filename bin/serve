@@ -1,0 +1,2 @@
+#!/bin/sh
+./build/ip-lookup-service__gin

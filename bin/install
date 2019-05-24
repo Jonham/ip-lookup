@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# init golang package
+govendor sync

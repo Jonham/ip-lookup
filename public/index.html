@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>IP Lookup</title>
+  <script src="https://unpkg.com/vue@2.6.10/dist/vue.js"></script>
+  <script src="https://unpkg.com/axios@0.18.0/dist/axios.min.js"></script>
+  <script src="https://unpkg.com/clipboard@2/dist/clipboard.min.js"></script>
+  <style>
+    [v-cloak] {
+      display: none;
+    }
+    .copiable {
+      cursor: pointer;
+    }
+    .copiable:active {
+      background-color: aqua;
+    }
+    .copiable:active::after {
+      content: '复制成功';
+      font-size: 1em;
+      color: black;
+      margin-left: 10px;
+      background-color: greenyellow;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" v-cloak>
+    <!-- 读取当前IP -->
+    <div>
+      当前IP:
+      <p 
+          class="ip-num copiable"
+          v-text="ipNumber"
+          :data-clipboard-text="ipNumber"></p>
+    </div>
+    <!-- 读取IP历史记录 -->
+    <h3>你最近的IP记录（请注意是否使用了VPN）：</h3>
+    <div class="last-ip-list">
+      <p class="copiable"
+          :data-clipboard-text="item.ip"
+          v-for="(item, index) in lastIpList"
+          :key="index">
+        {{ item.ip }}
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const app = new Vue({
+      el: '#app',
+      data: {
+        key: 'JA:ipLookup',
+        maxIp: 10,
+        ipNumber: '',
+        lastIpList: [],
+      },
+      mounted () {
+        new ClipboardJS('.copiable')
+
+        this.getLastIpList()
+
+        axios.get('/api/v1/ip-look-up').then(res => {
+          this.ipNumber = res.data.ip
+          this.saveCurrentIp(this.ipNumber)
+        })
+      },
+      methods: {
+        getLastIpList () {
+          const key = this.key
+          try {
+            const data = JSON.parse(localStorage[key])
+            if (data && Array.isArray(data)) {
+              this.lastIpList = data
+            }
+          } catch (err) {
+            console.log(err)
+          }
+        },
+        saveCurrentIp (currentIp) {
+          const now = Date.now()
+          let list = this.lastIpList
+          list = list.filter(i => i.ip !== currentIp)
+
+          list.unshift({
+            ip: currentIp,
+            time: now,
+          })
+
+          const key = this.key
+          try {
+            const data = JSON.stringify(list)
+            localStorage[key] = data
+          } catch (err) {
+            console.log(err)
+          }
+        },
+      }
+    })
+  </script>
+</body>
+</html>
