@@ -10,6 +10,7 @@ import (
 )
 
 type webServiceConf struct {
+	Host string
 	Port string
 }
 
@@ -58,5 +59,5 @@ func main() {
 	yaml.Unmarshal(data, &config)
 
 	r := setupRouter()
-	r.Run("127.0.0.1:" + config.Port)
+	r.Run(config.Host + ":" + config.Port)
 }
