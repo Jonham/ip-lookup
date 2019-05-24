@@ -58,5 +58,5 @@ func main() {
 	yaml.Unmarshal(data, &config)
 
 	r := setupRouter()
-	r.Run(":" + config.Port)
+	r.Run("127.0.0.1:" + config.Port)
 }
