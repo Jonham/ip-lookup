@@ -21,3 +21,5 @@
 
 # local bin
 bin/local/*
+
+get-network-ip.log.json

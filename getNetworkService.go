@@ -40,15 +40,11 @@ func getNetIP() map[string]interface{} {
 
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		panic(err)
-	}
+	check(err)
 
 	result := make(map[string]interface{})
 	json.Unmarshal(body, &result)
-	if err != nil {
-		panic(err)
-	}
+	check(err)
 
 	return result
 }
