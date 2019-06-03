@@ -44,7 +44,7 @@
           :data-clipboard-text="item.ip"
           v-for="(item, index) in lastIpList"
           :key="index">
-        {{ item.ip }}
+        {{ item.ip }}(最近连接{{ item.counts }}次)
       </p>
     </div>
   </div>
@@ -74,7 +74,12 @@
           try {
             const data = JSON.parse(localStorage[key])
             if (data && Array.isArray(data)) {
-              this.lastIpList = data
+              this.lastIpList = data.map(item => {
+                return {
+                  counts: 1,
+                  ...item,
+                }
+              })
             }
           } catch (err) {
             console.log(err)
@@ -83,11 +88,20 @@
         saveCurrentIp (currentIp) {
           const now = Date.now()
           let list = this.lastIpList
-          list = list.filter(i => i.ip !== currentIp)
+          let currentIpVisitCounts = 1
+          list = list.filter(i => {
+            if (i.ip !== currentIp) {
+              return true
+            } else {
+              currentIpVisitCounts = i.counts || 1
+              return false
+            }
+          })
 
           list.unshift({
             ip: currentIp,
             time: now,
+            counts: currentIpVisitCounts,
           })
 
           const key = this.key

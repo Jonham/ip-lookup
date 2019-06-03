@@ -19,7 +19,7 @@ func main() {
 	r := setupRouter()
 
 	// 定时提交Get网络下的IP
-	// startInterval(sendGetNetIP, 1, 0)
+	startInterval(sendGetNetIP, 1, 0)
 
 	r.Run(config.Host + ":" + config.Port)
 }
