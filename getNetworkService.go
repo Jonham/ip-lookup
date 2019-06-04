@@ -15,15 +15,32 @@ type ipLogger struct {
 	UpdateTime string
 }
 
-func check(e error) {
+func check(e error) string {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered in check", r)
+		}
+	}()
+
 	if e != nil {
 		panic(e)
 	}
+
+	return "GOOD"
 }
 
 // 获取Get网络公网IP，并提交
 func getNetIP() map[string]interface{} {
+	// 处理错误信息
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered in getNetIP", r)
+		}
+	}()
+
 	ipLookupServiceURL := "https://ip-lookup.jonham.app/api/v1/save-get-office-ip"
+	// error
+	// ipLookupServiceURL := "https://ip-lookupd.jonam.ee/api/error"
 	// ipLookupServiceURL := "http://localhost:19524/api/v1/save-get-office-ip"
 
 	timeout5s, _ := time.ParseDuration("5s")
@@ -31,11 +48,13 @@ func getNetIP() map[string]interface{} {
 		Timeout: timeout5s,
 	}
 	var req *http.Request
-	req, _ = http.NewRequest("GET", ipLookupServiceURL, nil)
-	resp, err := client.Do(req)
+	req, err := http.NewRequest("GET", ipLookupServiceURL, nil)
+	check(err)
 
+	resp, err := client.Do(req)
 	if err != nil {
-		panic(err)
+		fmt.Println("net ", err)
+		check(err)
 	}
 
 	defer resp.Body.Close()
@@ -88,6 +107,13 @@ func controllerSaveGetNetIP(c *gin.Context) {
 }
 
 func sendGetNetIP() {
+	// 处理错误信息
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered in sendGetNetIP", r)
+		}
+	}()
+
 	result := getNetIP()
 	fmt.Println(result, " on ", time.Now())
 }
