@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -24,6 +25,13 @@ func setupRouter() *gin.Engine {
 		// 服务于Get路由器IP查找
 		apiV1.GET("/get-office-ip", controllerGetNetIP)
 		apiV1.GET("/save-get-office-ip", controllerSaveGetNetIP)
+
+		apiV1.GET("/ws", func(c *gin.Context) {
+			fmt.Println("websocket")
+
+			webscoketHandler(c.Writer, c.Request)
+		})
+		apiV1.GET("/send-ws", websocketServerSendHandler)
 	}
 
 	r.StaticFile("/", "./public/index.html")
